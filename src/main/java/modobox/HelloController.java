@@ -22,18 +22,19 @@ import static org.quartz.SimpleScheduleBuilder.*;
 import static org.quartz.DateBuilder.*;
 import java.util.*;
 import java.text.DateFormat;
-
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 @RestController
 public class HelloController {
 
     @RequestMapping("/on")
     public String on() {
-	try {
-	    Process p = Runtime.getRuntime().exec("/usr/local/bin/gpio write 4 on");
-	} catch(IOException e) {
-	    e.printStackTrace();
-	}
+
+	String bip = "/home/mike/test.mp3";
+	Media hit = new Media(bip);
+	MediaPlayer mediaPlayer = new MediaPlayer(hit);
+	mediaPlayer.play();
         return "Turning on. <a href=\"/off\">Turn off</a>";
     }
 
