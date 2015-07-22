@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
-import java.io.IOException;
+//import java.io.IOException;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -22,6 +22,8 @@ import static org.quartz.SimpleScheduleBuilder.*;
 import static org.quartz.DateBuilder.*;
 import java.util.*;
 import java.text.DateFormat;
+import java.io.*;
+import sun.audio.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -30,11 +32,12 @@ public class HelloController {
 
     @RequestMapping("/on")
     public String on() {
+	try {
+	    Process p = Runtime.getRuntime().exec("play /home/mike/mnc.mp3");
+	} catch(IOException e) {
+	    e.printStackTrace();
+	}
 
-	String bip = "/home/mike/test.mp3";
-	Media hit = new Media(bip);
-	MediaPlayer mediaPlayer = new MediaPlayer(hit);
-	mediaPlayer.play();
         return "Turning on. <a href=\"/off\">Turn off</a>";
     }
 
