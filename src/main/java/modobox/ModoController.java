@@ -69,7 +69,7 @@ public class ModoController {
 	String ret = "";
 	String[] filetypes = {".mp3",".wav"};
 
-	File homeDir = new File("/home/mike");
+	File homeDir = new File("/home/pi");
 	File[] files = homeDir.listFiles();
 	for(int i=0; i<files.length; i++) {
 	    File f = files[i];
