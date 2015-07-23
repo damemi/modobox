@@ -4,25 +4,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
-//import java.io.IOException;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.JobKey;
-import org.quartz.JobDataMap;
-//import org.quartz.SimpleScheduleBuilder;
-import org.quartz.Trigger;
-import org.quartz.SimpleTrigger;
-//import org.quartz.TriggerBuilder;
-import org.quartz.impl.StdSchedulerFactory;
-import static org.quartz.TriggerBuilder.*;
-import static org.quartz.SimpleScheduleBuilder.*;
-import static org.quartz.DateBuilder.*;
 import java.util.*;
 import java.text.DateFormat;
 import java.io.*;
+import java.net.*;
 import sun.audio.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -30,10 +15,16 @@ import javafx.scene.media.MediaPlayer;
 @RestController
 public class HelloController {
 
+    Process p;
+
     @RequestMapping("/on")
     public String on() {
 	try {
-	    Process p = Runtime.getRuntime().exec("play /home/mike/mnc.mp3");
+	    if(p != null) {
+		p.destroy();
+	    }
+	    ProcessBuilder pb = new ProcessBuilder("play", "/home/mike/mnc.mp3");
+	    p = pb.start();
 	} catch(IOException e) {
 	    e.printStackTrace();
 	}
@@ -43,22 +34,48 @@ public class HelloController {
 
     @RequestMapping("/off")
     public String off() {
-	try {
-	    Process p = Runtime.getRuntime().exec("/usr/local/bin/gpio write 4 off");
-	} catch(IOException e) {
-	    e.printStackTrace();
+	if(p != null) {
+	    p.destroy();
 	}
         return "Turning off. <a href=\"/on\">Turn on</a>";
     }
 
-    @RequestMapping("/mode")
-    public String mode() {
+    @RequestMapping("/play/{id}")
+    public String play(@PathVariable String id) {
 	try {
-	    Process p = Runtime.getRuntime().exec("/usr/local/bin/gpio mode 4 out");
+	    if(p != null) {
+		p.destroy();
+	    }
+	    ProcessBuilder pb = new ProcessBuilder("play", URLDecoder.decode(path,"UTF-8"));
+	    p = pb.start();
 	} catch(IOException e) {
 	    e.printStackTrace();
 	}
-        return "Turning mode to out";
+	return "Playing "+path+"<br /><a href=\"/\">Go back</a>";
+    }
+
+    @RequestMapping("/")
+    public String home() {
+	String ret = "";
+	String[] filetypes = {".mp3",".wav"};
+
+	File homeDir = new File("/home/mike");
+	File[] files = homeDir.listFiles();
+	for(int i=0; i<files.length; i++) {
+	    File f = files[i];
+	    for(int j=0; j<filetypes.length; j++) {
+		if(f.getName().contains(filetypes[j])) {
+
+		    try {
+			ret = ret + "<a href=\"/play/"+URLEncoder.encode(f.getPath(), "UTF-8") + "\">"+f.getName()+"</a><br />";
+		    } catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		    }
+		    break;
+		}
+	    }
+	}
+	return ret;
     }
 
     
