@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.springframework</groupId>
-    <artifactId>gs-spring-boot</artifactId>
+    <artifactId>modobox</artifactId>
     <version>0.1.0</version>
 
     <parent>
@@ -40,6 +40,13 @@
             <scope>test</scope>
         </dependency>
         <!-- end::tests[] --> 
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+	
+
 	<dependency>
 	  <groupId>commons-collections</groupId>
 	  <artifactId>commons-collections</artifactId>
@@ -52,11 +59,6 @@
 	  <version>1.1.1</version>
 	</dependency>
 
-	<dependency>
-	  <groupId>org.quartz-scheduler</groupId>
-	  <artifactId>quartz</artifactId>
-	  <version>2.0.2</version>
-	</dependency>  
     </dependencies>
 
     <properties>

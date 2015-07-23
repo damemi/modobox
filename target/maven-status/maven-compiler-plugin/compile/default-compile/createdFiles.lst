@@ -1,2 +1,4 @@
 modobox/Application.class
-modobox/HelloController.class
+modobox/domain/Song.class
+modobox/repository/SongRepo.class
+modobox/ModoController.class
