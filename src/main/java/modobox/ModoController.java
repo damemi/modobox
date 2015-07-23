@@ -24,21 +24,6 @@ public class ModoController {
 
     public ModoController() {}
 
-    @RequestMapping("/on")
-    public String on() {
-	try {
-	    if(p != null) {
-		p.destroy();
-	    }
-	    ProcessBuilder pb = new ProcessBuilder("play", "/home/mike/mnc.mp3");
-	    p = pb.start();
-	} catch(IOException e) {
-	    e.printStackTrace();
-	}
-
-        return "Turning on. <a href=\"/off\">Turn off</a>";
-    }
-
     @RequestMapping("/off")
     public String off() {
 	if(p != null) {
