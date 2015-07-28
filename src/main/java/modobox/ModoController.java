@@ -28,6 +28,8 @@ public class ModoController {
 
     boolean playingList;
 
+    MediaPlayer currentPlayer;
+
     @Autowired
     ModoController(SongRepo songRepo) {
 	this.songRepo = songRepo;
@@ -114,11 +116,16 @@ public class ModoController {
 	*/
 	
 	try {
-	final URL resource = new File(song.getPath()).toURI().toURL();
-	final Media media = new Media(resource.toString());
-	
-	final MediaPlayer mediaPlayer = new MediaPlayer(media);
-	mediaPlayer.play();
+	    final URL resource = new File(song.getPath()).toURI().toURL();
+	    final Media media = new Media(resource.toString());
+
+	    if(currentPlayer == null) {
+		currentPlayer = new MediaPlayer(media);
+	    } else {
+		currentPlayer.stop();
+		currentPlayer = new MediaPlayer(media);
+	    }
+	    currentPlayer.play();
 	} catch (MalformedURLException e) {
 	    e.printStackTrace();
 	}
