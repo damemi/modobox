@@ -26,6 +26,8 @@ public class ModoController {
     Song nowPlaying;
     String[] filetypes = {".mp3",".wav"};
 
+    ModoPlayer modoPlayer;
+
     boolean playingList;
 
     MediaPlayer currentPlayer;
@@ -59,17 +61,19 @@ public class ModoController {
     }
 
     private void getPlaylist() {
-	List<Song> playlist = songRepo.findAll();
-	for(int i=0; i<playlist.size(); i++) {
-	    int random = (int) (Math.random() * playlist.size());
-	    Song a = playlist.get(i);
-	    Song b = playlist.get(random);
-	    playlist.set(random,a);
-	    playlist.set(i, b);
+	this.playlist = songRepo.findAll();
+	for(int i=0; i<this.playlist.size(); i++) {
+	    int random = (int) (Math.random() * this.playlist.size());
+	    Song a = this.playlist.get(i);
+	    Song b = this.playlist.get(random);
+	    this.playlist.set(random,a);
+	    this.playlist.set(i, b);
 	}
     }
 
     public void startPlaylist() {
+	this.modoPlayer = new ModoPlayer(this.playlist);
+	modoPlayer.start();
     }
 
     private void playSong(Song song) {
@@ -93,6 +97,9 @@ public class ModoController {
 
     @RequestMapping("/off")
     public String off() {
+
+	modoPlayer.interrupt();
+
 	if(p != null) {
 	    p.destroy();
 	}
@@ -103,7 +110,6 @@ public class ModoController {
     public String play(@PathVariable String id) {
 	Song song = songRepo.findOne(id);
 
-	/*
 	try {
 	    if(p != null) {
 		p.destroy();
@@ -112,23 +118,7 @@ public class ModoController {
 	    p = pb.start();
 	} catch(IOException e) {
 	    e.printStackTrace();
-	}
-	*/
-	
-	try {
-	    final URL resource = new File(song.getPath()).toURI().toURL();
-	    final Media media = new Media(resource.toString());
-
-	    if(currentPlayer == null) {
-		currentPlayer = new MediaPlayer(media);
-	    } else {
-		currentPlayer.stop();
-		currentPlayer = new MediaPlayer(media);
-	    }
-	    currentPlayer.play();
-	} catch (MalformedURLException e) {
-	    e.printStackTrace();
-	}
+	}       
 
 	return "Playing "+id+"<br /><a href=\"/\">Go back</a>";
     }
