@@ -13,6 +13,10 @@ public class ModoPlayer extends Thread {
 	this.playlist = playlist;
     }
 
+    public List<Song> getPlaylist() {
+	return this.playlist;
+    }
+
     @Override
     public void run() {
 	for(int i = 0; i < this.playlist.size(); i++) {

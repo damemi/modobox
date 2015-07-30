@@ -1,6 +1,5 @@
-modobox/domain/Song.class
-modobox/AbstractJavaFxApplicationSupport.class
 modobox/Application.class
 modobox/ModoPlayer.class
 modobox/repository/SongRepo.class
 modobox/ModoController.class
+modobox/domain/Song.class

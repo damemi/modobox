@@ -76,34 +76,22 @@ public class ModoController {
 	modoPlayer.start();
     }
 
-    private void playSong(Song song) {
-	if(p != null) {
-	    p.destroy();
-	}
-
-	try {
-	    ProcessBuilder pb = new ProcessBuilder("play", song.getPath()).inheritIO();
-	    p = pb.start();
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
-
-	if(playlist.size() > 0) {
-	    Song next = playlist.get(0);
-	    playlist.remove(0);
-	    playSong(next); //Woah there buddy do we really want to recurse here?
-	}
+    @RequestMapping("/stop")
+    public String stop() {
+	modoPlayer.interrupt();
+        return "Turning off. <a href=\"/\">Turn on</a>";
     }
 
-    @RequestMapping("/off")
-    public String off() {
-
+    @RequestMapping("/next")
+    public String next() {
 	modoPlayer.interrupt();
+	this.playlist = modoPlayer.getPlaylist();
+	this.playlist.remove(0);
 
-	if(p != null) {
-	    p.destroy();
-	}
-        return "Turning off. <a href=\"/on\">Turn on</a>";
+	this.modoPlayer = new ModoPlayer(this.playlist);
+	modoPlayer.start();
+
+	return "Success";
     }
 
     @RequestMapping("/play/{id}")
@@ -129,15 +117,20 @@ public class ModoController {
 
 	File homeDir = new File("/home/pi");
 	this.indexDir("/home/mike/Music");
-
+	
 	List<Song> songs = songRepo.findAll();
 	for(int i = 0; i < songs.size(); i++) {
 	    Song song = songs.get(i);
 	    ret = ret + "<a href=\"/play/"+song.getSongId()+"\">"+song.getName()+"</a><br />";
 	}
+	
 
 	getPlaylist();
 	startPlaylist();
+	for(int j=0; j<this.playlist.size(); j++) {
+	    Song song = this.playlist.get(j);
+	    ret = ret + song.getName() + "<br />";
+	}
 
 	//this.playlingList = true;
 	//while(playlingList) {
