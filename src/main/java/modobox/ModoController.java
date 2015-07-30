@@ -23,13 +23,8 @@ public class ModoController {
     SongRepo songRepo;
     List<Song> playlist;
     List<Song> history;
-    Song nowPlaying;
     String[] filetypes = {".mp3",".wav"};
-
     ModoPlayer modoPlayer;
-
-    boolean playingList;
-
     MediaPlayer currentPlayer;
 
     @Autowired
@@ -82,11 +77,17 @@ public class ModoController {
         return "Turning off. <a href=\"/\">Turn on</a>";
     }
 
+    private void stopAndPop() {
+	if(this.modoPlayer != null) {
+	    this.modoPlayer.interrupt();
+	    this.playlist = this.modoPlayer.getPlaylist();
+	    this.playlist.remove(0);
+	}
+    }
+
     @RequestMapping("/next")
     public String next() {
-	modoPlayer.interrupt();
-	this.playlist = modoPlayer.getPlaylist();
-	this.playlist.remove(0);
+	stopAndPop();
 
 	this.modoPlayer = new ModoPlayer(this.playlist);
 	modoPlayer.start();
@@ -97,33 +98,31 @@ public class ModoController {
     @RequestMapping("/play/{id}")
     public String play(@PathVariable String id) {
 	Song song = songRepo.findOne(id);
+	stopAndPop();
 
-	try {
-	    if(p != null) {
-		p.destroy();
-	    }
-	    ProcessBuilder pb = new ProcessBuilder("play", song.getPath()).inheritIO();
-	    p = pb.start();
-	} catch(IOException e) {
-	    e.printStackTrace();
-	}       
+	this.playlist.add(0,song);
+	this.modoPlayer = new ModoPlayer(this.playlist);
+	modoPlayer.start();
 
 	return "Playing "+id+"<br /><a href=\"/\">Go back</a>";
+    }
+
+    @RequestMapping("/listSongs")
+    public String listSongs() {
+	String ret = "";
+	List<Song> songs = songRepo.findAll();
+	for(int i = 0; i < songs.size(); i++) {
+	    Song song = songs.get(i);
+	    ret = ret + "<a href=\"/play/"+song.getSongId()+"\">"+song.getName()+"</a><br />";
+	}
+	return ret;
     }
 
     @RequestMapping("/")
     public String home() {
 	String ret = "";
 
-	File homeDir = new File("/home/pi");
-	this.indexDir("/home/mike/Music");
-	
-	List<Song> songs = songRepo.findAll();
-	for(int i = 0; i < songs.size(); i++) {
-	    Song song = songs.get(i);
-	    ret = ret + "<a href=\"/play/"+song.getSongId()+"\">"+song.getName()+"</a><br />";
-	}
-	
+	this.indexDir("/home/mike/Music");	
 
 	getPlaylist();
 	startPlaylist();
@@ -131,10 +130,6 @@ public class ModoController {
 	    Song song = this.playlist.get(j);
 	    ret = ret + song.getName() + "<br />";
 	}
-
-	//this.playlingList = true;
-	//while(playlingList) {
-	//}
 
 	return ret;
     }

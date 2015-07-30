@@ -30,7 +30,7 @@ public class ModoPlayer extends Thread {
 
 	    try { 
 		p.waitFor();
-	    } catch (InterruptedException ie) { // tried playing new song
+	    } catch (InterruptedException ie) {
 		p.destroy();
 		break;
 	    }
